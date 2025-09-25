@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="i18n.js" type="module"></script>
+  <title>Log in — LifeLine</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f17; --muted:#8aa0b4; --text:#e6eef6;
+      --brand:#5ac8fa; --brand-2:#7df7d1; --line:#1f2a3a;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#0b0f17 0%, #0c1322 100%);color:var(--text);font-family:Inter,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+    a{color:inherit;text-decoration:none}
+    .container{width:min(500px,90%);margin:auto;padding:40px 0}
+    h1{margin:0 0 24px;text-align:center}
+    .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 16px;margin:8px 0;border-radius:12px;font-weight:600;border:1px solid #1b2f49;background:#0e1727;cursor:pointer}
+    .btn img{width:20px;height:20px}
+    .btn.google{border-color:#4285f4}
+    .btn.apple{border-color:#fff}
+    form{margin:20px 0}
+    .field{margin-bottom:16px}
+    label{display:block;margin-bottom:6px;font-weight:600}
+    input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #1b2f49;background:#0e1727;color:var(--text)}
+    .note{margin-top:20px;text-align:center;color:var(--muted)}
+    .note a{color:#5ac8fa;font-weight:600}
+    /* Nav */
+    nav{background:rgba(11,15,23,.6);backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid var(--line)}
+    .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+    .brand{display:flex;align-items:center;gap:8px;font-weight:800}
+    .logo{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--brand),var(--brand-2))}
+    .nav-right{display:flex;gap:10px;align-items:center}
+    .nav-right a{color:#cfe7ff;font-weight:600}
+    footer{margin-top:auto;text-align:center;color:var(--muted);padding:20px 0;border-top:1px solid var(--line);font-size:14px}
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav>
+  <div class="nav-inner">
+    <a href="about.htm" class="brand">  <!-- was about.htm -->
+      <span class="logo"></span><span>LifeLine</span>
+    </a>
+    <div class="nav-right">
+      <a href="login.htm" aria-current="page">Log in</a>
+      <a href="signUp.htm">Sign Up</a>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- Main -->
+  <main class="container">
+    <h1>Log in to LifeLine</h1>
+
+    <!-- Google & Apple -->
+    <button class="btn google" id="btnGoogle">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" />
+      Continue with Google
+    </button>
+
+    <button class="btn apple" id="btnApple">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="" />
+      Continue with Apple
+    </button>
+
+    <!-- Divider -->
+    <p style="text-align:center;color:var(--muted);margin:18px 0;">or</p>
+
+    <!-- Email + Password -->
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" required placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" required minlength="6" placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn" style="background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#0b0f17;border:none;">Log in</button>
+    </form>
+
+    <div class="note">
+      Don’t have an account? <a href="signUp.htm">Create one</a>
+    </div>
+  </main>
+
+  <footer>
+    © <span id="year"></span> LifeLine. All rights reserved.
+  </footer>
+
+  <script>
+    // Demo: replace with Firebase/Supabase auth later
+    document.getElementById('btnGoogle').addEventListener('click',()=>{
+      alert('Google login not connected yet.');
+    });
+    document.getElementById('btnApple').addEventListener('click',()=>{
+      alert('Apple login not connected yet.');
+    });
+    document.getElementById('loginForm').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      const email=document.getElementById('email').value;
+      const pw=document.getElementById('password').value;
+      alert('Demo login with email: '+email);
+    });
+    document.getElementById('year').textContent=new Date().getFullYear();
+  </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+  import { getAuth, isSignInWithEmailLink, signInWithEmailLink } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+  // same config as Sign Up page
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  (async ()=>{
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      let email = localStorage.getItem('lifeline_email_for_signin');
+      if (!email) email = window.prompt('Confirm your email to finish sign-in');
+      try {
+        await signInWithEmailLink(auth, email, window.location.href);
+        localStorage.removeItem('lifeline_email_for_signin');
+        // success → go to your app
+        window.location.href = 'dashboard.htm'; // change to where you want
+      } catch (e) {
+        alert('Sign-in error: ' + e.message);
+      }
+    }
+  })();
+</script>
+
+</body>
+</html>

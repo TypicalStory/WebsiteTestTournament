@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="i18n.js" type="module"></script>
+  <title>LifeLine — About</title>
+  <meta name="description" content="LifeLine — seasonal Minecraft competitions. €4 entry, €100 prize. Learn about our events, story, team, and FAQ." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f17; --panel:#101725; --muted:#8aa0b4; --text:#e6eef6;
+      --brand:#5ac8fa; --brand-2:#7df7d1; --line:#1f2a3a;
+      --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+      --shadow:0 10px 30px rgba(0,0,0,.35); --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:linear-gradient(180deg,#0b0f17 0%, #0c1322 100%);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;scroll-behavior:smooth}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    .container{width:min(1200px,90%);margin-inline:auto}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;font-weight:700;border:1px solid #1b2f49;background:#0e1727;cursor:pointer}
+    .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#0b0f17;border:none}
+    .muted{color:var(--muted)}
+
+    /* Sticky Nav */
+    .nav{position:sticky;top:0;z-index:50;background:rgba(11,15,23,.6);backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid var(--line)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:800;letter-spacing:.2px}
+    .logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 0 0 3px rgba(90,200,250,.15)}
+    .nav-left{display:flex;align-items:center;gap:22px}
+    .nav-links{display:flex;gap:18px;align-items:center}
+    .nav-links a{color:var(--muted);font-weight:600}
+    .nav-links a:hover{color:var(--text)}
+    .nav-right{display:flex;align-items:center;gap:10px}
+    .login{color:#cfe7ff;font-weight:600}
+    .hamburger{display:none;gap:6px;flex-direction:column}
+    .hamburger span{width:24px;height:2px;background:#cfe7ff;border-radius:2px}
+    @media (max-width:900px){
+      .nav-links{display:none}
+      .hamburger{display:flex}
+      .mobile{display:none;position:absolute;left:0;right:0;top:100%;background:#0c1322;border-bottom:1px solid var(--line)}
+      .mobile a{display:block;padding:14px 20px;border-top:1px solid var(--line);color:var(--muted)}
+      .mobile a:hover{background:#0f1828;color:var(--text)}
+      .mobile .bar{display:flex;gap:12px;padding:14px 20px;border-top:1px solid var(--line)}
+    }
+
+    /* Sections + anchor offsets */
+    section{padding:56px 0;border-bottom:1px solid var(--line)}
+    .anchor{scroll-margin-top:90px}
+    h1,h2{margin:0 0 12px}
+    h2{font-size:28px}
+
+    /* Hero (Home/top) */
+    header.hero{padding:60px 0 40px;border-bottom:1px solid var(--line);background:
+      radial-gradient(600px 200px at 10% -10%, rgba(90,200,250,.15), transparent 60%),
+      radial-gradient(600px 200px at 90% -20%, rgba(125,247,209,.12), transparent 60%)}
+    .hero h1{font-size:clamp(28px,5vw,46px);line-height:1.1}
+    .hero p{color:var(--muted);font-size:18px;max-width:840px}
+
+    /* Events (bigger cards) */
+    .events{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:16px}
+    .event{padding:22px;border-radius:18px;background:#0e1727;border:1px solid #15243a;box-shadow:var(--shadow)}
+    .event h3{margin:0 0 8px;font-size:22px}
+    .event .meta{color:#9fb4ca;margin-bottom:10px}
+    .event .body{font-size:16px;color:var(--muted)}
+    .event details{margin-top:12px;border-top:1px solid #15243a;padding-top:10px}
+    .event summary{cursor:pointer;font-weight:600;color:#cfe7ff}
+    .event .bar{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .event .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#0b0f17;border:none}
+    @media (max-width:1000px){.events{grid-template-columns:1fr 1fr}}
+    @media (max-width:640px){.events{grid-template-columns:1fr}}
+
+    /* Timeline */
+    .timeline{position:relative;margin-top:10px}
+    .timeline:before{content:"";position:absolute;left:20px;top:0;bottom:0;width:2px;background:#18314f}
+    .milestone{position:relative;margin-left:56px;margin-bottom:22px;padding:16px;border-radius:12px;background:#0f192b;border:1px solid #15243a}
+    .milestone .pin{position:absolute;left:-10px;top:18px;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 0 0 3px rgba(90,200,250,.18)}
+    .milestone h4{margin:0 0 6px}
+    .milestone small{color:#9fb4ca}
+
+    /* Team */
+    .team-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:18px}
+    .person{background:#0e1727;border:1px solid #15243a;border-radius:14px;overflow:hidden}
+    .avatar{aspect-ratio:16/10;background:linear-gradient(135deg,#1d2a3a,#122039);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;letter-spacing:.5px}
+    .person .info{padding:14px}
+    .person .role{color:var(--muted);font-size:14px;margin-top:2px}
+    @media (max-width:1100px){.team-grid{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:800px){.team-grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:520px){.team-grid{grid-template-columns:1fr}}
+
+    /* FAQ */
+    .faq{margin-top:20px}
+    .qa{border:1px solid #15243a;border-radius:12px;overflow:hidden;margin-bottom:10px;background:#0f192b}
+    .qa button{all:unset;display:flex;justify-content:space-between;gap:10px;width:100%;padding:14px 16px;cursor:pointer;font-weight:600}
+    .qa button span{color:var(--muted);font-weight:500}
+    .qa .answer{display:none;padding:0 16px 16px;color:var(--muted)}
+    .qa[aria-expanded="true"] .answer{display:block}
+
+    /* Footer */
+    footer{padding:36px 0 50px}
+    .foot{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:16px}
+    .foot h4{margin:0 0 10px}
+    .foot a{display:block;color:var(--muted);padding:6px 0}
+    .copyright{margin-top:18px;color:#7f96ad;font-size:14px;border-top:1px solid var(--line);padding-top:12px}
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="nav" aria-label="Main">
+    <div class="container nav-inner">
+      <div class="nav-left">
+        <a href="#top" class="brand" aria-label="Go to top">
+          <span class="logo" aria-hidden="true"></span>
+          <span>LifeLine</span>
+        </a>
+        <div class="nav-links" role="menubar" aria-label="Primary">
+          <a href="#top">Home</a>
+          <a href="#events">Events</a>
+          <a href="#status">Status</a>
+          <a href="#faq">FAQ</a>
+        </div>
+      </div>
+      <div class="nav-right">
+        <a class="login" href="login.htm">Log in</a>
+        <a class="btn" href="signUp.htm">Sign Up</a>
+        <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+    <div class="mobile" id="mobileMenu" aria-label="Mobile menu">
+      <a href="#top">Home</a>
+      <a href="#events">Events</a>
+      <a href="#status">Status</a>
+      <a href="#faq">FAQ</a>
+      <div class="bar">
+        <a class="login" href="login.htm">Log in</a>
+        <a class="btn" href="signUp.htm">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Home / Top -->
+  <header id="top" class="hero anchor">
+    <div class="container">
+      <h1>Welcome to LifeLine</h1>
+      <p class="muted" id="aboutDesc">
+        <!-- Write your short description (1–2 sentences) here. Example: -->
+        LifeLine is a seasonal Minecraft competition: €4 entrance, €100 prize. Our mission is to offer a fun, competitive atmosphere and great entertainment for viewers.
+      </p>
+    </div>
+  </header>
+
+  <!-- Events -->
+  <section id="events" class="anchor" aria-labelledby="eventsTitle">
+    <div class="container">
+      <h2 id="eventsTitle">Events</h2>
+      <div class="events">
+        <!-- Snowy Rides -->
+        <article class="event">
+          <h3>Snowy Rides — Winter</h3>
+          <div class="meta">Entrance: €4 · Prize: €100</div>
+          <div class="body">
+            Ice-biome arenas, low visibility, and slippery terrain. Strategy and positioning win the day.
+          </div>
+          <details>
+            <summary>More details</summary>
+            <ul style="margin:8px 0 0 18px;color:var(--muted)">
+              <li>Format: Solo, double-elimination</li>
+              <li>Rules: No hacks/macros; vanilla balance</li>
+              <li>Tip: Plan for resource scarcity</li>
+            </ul>
+          </details>
+          <div class="bar">
+            <a class="btn primary" href="signUp.htm?event=snowy-rides">Sign Up</a>
+            <a class="btn" href="login.htm?event=snowy-rides">Log in</a>
+          </div>
+        </article>
+
+        <!-- Dead in the Hot -->
+        <article class="event">
+          <h3>Dead in the Hot — Summer</h3>
+          <div class="meta">Entrance: €4 · Prize: €100</div>
+          <div class="body">
+            Desert maps with heat-haze and long sightlines. Resource control and ranged aim matter most.
+          </div>
+          <details>
+            <summary>More details</summary>
+            <ul style="margin:8px 0 0 18px;color:var(--muted)">
+              <li>Format: Duos, best-of-three</li>
+              <li>Rules: Shared inventory caps; no cross-team comms</li>
+              <li>Bonus: Mid-match supply drops</li>
+            </ul>
+          </details>
+          <div class="bar">
+            <a class="btn primary" href="signUp.htm?event=dead-in-the-hot">Sign Up</a>
+            <a class="btn" href="login.htm?event=dead-in-the-hot">Log in</a>
+          </div>
+        </article>
+
+        <!-- Falling Leaves -->
+        <article class="event">
+          <h3>Falling Leaves — Autumn</h3>
+          <div class="meta">Entrance: €4 · Prize: €100</div>
+          <div class="body">
+            Forest arenas with shifting cover and ambush paths. Patience and map knowledge are rewarded.
+          </div>
+          <details>
+            <summary>More details</summary>
+            <ul style="margin:8px 0 0 18px;color:var(--muted)">
+              <li>Format: Squads (4), points league</li>
+              <li>Rules: Friendly fire on; revive rules enabled</li>
+              <li>Twist: Rotating “leaf storm” zones</li>
+            </ul>
+          </details>
+          <div class="bar">
+            <a class="btn primary" href="signUp.htm?event=falling-leaves">Sign Up</a>
+            <a class="btn" href="login.htm?event=falling-leaves">Log in</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Status (How did we get here + Team) -->
+  <section id="status" class="anchor" aria-labelledby="timelineTitle">
+    <div class="container">
+      <h2 id="timelineTitle">How did we get here</h2>
+      <div class="timeline" role="list">
+        <article class="milestone" role="listitem">
+          <span class="pin" aria-hidden="true"></span>
+          <h4>2023 — Idea phase</h4>
+          <small>Concept for a fair, seasonal Minecraft league</small>
+        </article>
+        <article class="milestone" role="listitem">
+          <span class="pin" aria-hidden="true"></span>
+          <h4>2024 — Server trials</h4>
+          <small>First scrims, rulebook, and anti-cheat audits</small>
+        </article>
+        <article class="milestone" role="listitem">
+          <span class="pin" aria-hidden="true"></span>
+          <h4>2025 — LifeLine launch</h4>
+          <small>Three-part event format and €100 prize</small>
+        </article>
+      </div>
+
+      <!-- Team -->
+      <h2 style="margin-top:28px">Team</h2>
+      <p class="muted">No photos yet — letter avatars for now.</p>
+      <div class="team-grid">
+        <article class="person">
+          <div class="avatar" aria-hidden="true">AB</div>
+          <div class="info">
+            <strong>Alexandru Barleanu</strong>
+            <div class="role">Founder</div>
+          </div>
+        </article>
+        <article class="person">
+          <div class="avatar" aria-hidden="true">TB</div>
+          <div class="info">
+            <strong>Tumurug Bogdan</strong>
+            <div class="role">Co-Founder</div>
+          </div>
+        </article>
+        <article class="person">
+          <div class="avatar" aria-hidden="true">AB</div>
+          <div class="info">
+            <strong>Alex Barleanu</strong>
+            <div class="role">Marketing Lead</div>
+          </div>
+        </article>
+        <article class="person">
+          <div class="avatar" aria-hidden="true">PT</div>
+          <div class="info">
+            <strong>Panainte Tudor</strong>
+            <div class="role">Editing Team Lead</div>
+          </div>
+        </article>
+        <article class="person">
+          <div class="avatar" aria-hidden="true">CC</div>
+          <div class="info">
+            <strong>Ciobănașu Codrin</strong>
+            <div class="role">Server Management Lead</div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="anchor" aria-labelledby="faqTitle">
+    <div class="container">
+      <h2 id="faqTitle">FAQ</h2>
+      <div class="faq">
+        <div class="qa" aria-expanded="false">
+          <button aria-controls="a1" aria-expanded="false">
+            <span>How much is the entry fee?</span>
+            <span aria-hidden="true">+</span>
+          </button>
+          <div id="a1" class="answer">
+            The entrance fee is <strong>€4</strong> per player for each event.
+          </div>
+        </div>
+        <div class="qa" aria-expanded="false">
+          <button aria-controls="a2" aria-expanded="false">
+            <span>What’s the prize?</span>
+            <span aria-hidden="true">+</span>
+          </button>
+          <div id="a2" class="answer">
+            The winner receives <strong>€100</strong>. Additional bonuses may be announced.
+          </div>
+        </div>
+        <div class="qa" aria-expanded="false">
+          <button aria-controls="a3" aria-expanded="false">
+            <span>Do I need an account?</span>
+            <span aria-hidden="true">+</span>
+          </button>
+          <div id="a3" class="answer">
+            Yes. Please <a class="link" href="signUp.htm">sign up</a> and then <a class="link" href="login.htm">log in</a> to manage your entries.
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Full FAQ PDF -->
+      <div style="margin-top:16px">
+        <a class="btn primary" href="FAQFirst.pdf" download>Download Full FAQ (PDF)</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container foot">
+      <div>
+        <div class="brand" style="margin-bottom:8px;display:flex;align-items:center;gap:10px">
+          <span class="logo" aria-hidden="true"></span>
+          <span>LifeLine</span>
+        </div>
+        <p class="muted" style="font-size:14px">Minecraft competitions — fair and fun.</p>
+      </div>
+      <div>
+        <h4>Navigate</h4>
+        <a href="#top">Home</a>
+        <a href="#events">Events</a>
+        <a href="#status">Status</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div>
+        <h4>Account</h4>
+        <a href="login.htm">Log in</a>
+        <a href="signUp.htm">Sign Up</a>
+      </div>
+      <div>
+        <h4>Events</h4>
+        <a href="signUp.htm?event=snowy-rides">Snowy Rides</a>
+        <a href="signUp.htm?event=dead-in-the-hot">Dead in the Hot</a>
+        <a href="signUp.htm?event=falling-leaves">Falling Leaves</a>
+      </div>
+    </div>
+    <div class="container copyright">
+      © <span id="year"></span> LifeLine. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const ham = document.querySelector('.hamburger');
+    const mobile = document.getElementById('mobileMenu');
+    ham?.addEventListener('click', () => {
+      const open = mobile.style.display === 'block';
+      mobile.style.display = open ? 'none' : 'block';
+      ham.setAttribute('aria-expanded', String(!open));
+    });
+
+    // FAQ accordion (accessible)
+    document.querySelectorAll('.qa button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const qa = btn.closest('.qa');
+        const expanded = qa.getAttribute('aria-expanded') === 'true';
+        qa.setAttribute('aria-expanded', String(!expanded));
+        btn.setAttribute('aria-expanded', String(!expanded));
+      });
+    });
+
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

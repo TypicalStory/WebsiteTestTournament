@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="i18n.js" type="module"></script>
+  <title>Enter Event — LifeLine</title>
+  <meta name="description" content="Enter a LifeLine seasonal event. Complete rules, verify age, upload documents, pay, and get your ticket." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f17; --panel:#101725; --muted:#8aa0b4; --text:#e6eef6;
+      --brand:#5ac8fa; --brand-2:#7df7d1; --line:#1f2a3a;
+      --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+      --shadow:0 10px 30px rgba(0,0,0,.35); --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:linear-gradient(180deg,#0b0f17 0%, #0c1322 100%);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;scroll-behavior:smooth}
+    a{color:inherit;text-decoration:none}
+    .container{width:min(1100px,90%);margin-inline:auto}
+    .muted{color:var(--muted)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;font-weight:700;border:1px solid #1b2f49;background:#0e1727;cursor:pointer}
+    .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#0b0f17;border:none}
+    .btn.small{padding:8px 10px;border-radius:10px;font-weight:600}
+    .card{background:linear-gradient(180deg,#0d1524,#0b1321);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+    .pad{padding:20px}
+
+    /* Nav (simple: logo left; optional Account on right) */
+    .nav{position:sticky;top:0;z-index:50;background:rgba(11,15,23,.6);backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid var(--line)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:800}
+    .logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-2))}
+    .right{display:flex;gap:10px;align-items:center}
+
+    /* Hero */
+    header.hero{padding:36px 0 20px;border-bottom:1px solid var(--line);background:
+      radial-gradient(600px 200px at 10% -10%, rgba(90,200,250,.15), transparent 60%),
+      radial-gradient(600px 200px at 90% -20%, rgba(125,247,209,.12), transparent 60%)}
+    h1{margin:0 0 10px}
+    .badge{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid #1b2f49;background:#0e1727;color:#cfe7ff;font-weight:700}
+
+    /* Stepper */
+    .stepper{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:16px 0}
+    .step{padding:10px;border:1px solid #1b2f49;border-radius:10px;text-align:center;font-weight:700;color:#9db6d0;background:#0e1727}
+    .step.active{color:#0b0f17;background:linear-gradient(135deg,var(--brand),var(--brand-2));border:none}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+    /* Forms */
+    .field{margin-bottom:14px}
+    .field label{display:block;margin-bottom:6px;font-weight:600}
+    .input, select, textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #15243a;background:#0e1727;color:var(--text);outline:none}
+    .input:focus, select:focus, textarea:focus{border-color:#24507e;box-shadow:0 0 0 3px rgba(90,200,250,.15)}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .chips{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{padding:10px 12px;border-radius:999px;border:1px solid #1b2f49;background:#0e1727;cursor:pointer}
+    .chip[aria-checked="true"]{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#0b0f17;border:none}
+    .hint{font-size:12px;color:#8aa0b4;margin-top:4px}
+    .error{color:var(--danger);font-size:13px;margin-top:6px;display:none}
+    .ok{color:var(--ok);font-size:13px;margin-top:6px;display:none}
+
+    /* Rules collapsible */
+    details.rules{border:1px solid #1b2f49;border-radius:12px;overflow:hidden}
+    details.rules > summary{cursor:pointer;padding:12px 16px;font-weight:700;background:#0e1727}
+    details.rules[open] > summary{border-bottom:1px solid #1b2f49}
+    .rules-content{padding:12px 16px;color:#c1d5ea}
+
+    /* Ticket */
+    .ticket{max-width:700px;margin:0 auto;border:1px dashed #294266;border-radius:16px;background:#0e1727}
+    .ticket .head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #294266;padding-bottom:10px;margin-bottom:10px}
+    .ticket .rows{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:600px){.ticket .rows{grid-template-columns:1fr}}
+
+    footer{padding:36px 0 50px;border-top:1px solid var(--line);margin-top:26px}
+    .copyright{color:#7f96ad;font-size:14px}
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="nav" aria-label="Main">
+    <div class="container nav-inner">
+      <a href="home.htm" class="brand">
+        <span class="logo" aria-hidden="true"></span>
+        <span>LifeLine</span>
+      </a>
+      <div class="right">
+        <a class="btn small" href="home.htm#events">Back to events</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="container">
+      <span class="badge" id="eventBadge">Selected event</span>
+      <h1>Enter a LifeLine Event</h1>
+      <p class="muted">Complete the steps below to verify your eligibility, pay the fee, and receive your ticket.</p>
+
+      <div class="stepper" aria-label="Progress">
+        <div class="step active" data-step="1">1. Rules</div>
+        <div class="step" data-step="2">2. Details</div>
+        <div class="step" data-step="3">3. Age & Docs</div>
+        <div class="step" data-step="4">4. Payment</div>
+        <div class="step" data-step="5">5. Ticket</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" id="app">
+    <div class="grid">
+      <!-- Left column: main flow -->
+      <section class="card pad" id="panel">
+        <!-- STEP 1: Rules -->
+        <div data-panel="1">
+          <h2 style="margin-top:0">Event Rules</h2>
+          <details class="rules" open>
+            <summary>Read the full rules</summary>
+            <div class="rules-content">
+              <ol>
+                <li>Fair play only — no hacks, macros, or unauthorized mods.</li>
+                <li>Respect opponents and staff; harassment or griefing is not tolerated.</li>
+                <li>Follow match start times; repeated no-shows may cause disqualification.</li>
+                <li>Streaming is allowed; stream sniping is prohibited.</li>
+                <li>Decisions by referees are final; appeals may be filed within 24 hours.</li>
+              </ol>
+              <p class="hint">This is a quick summary; a longer rulebook may be shared per event.</p>
+            </div>
+          </details>
+          <div class="row" style="margin-top:12px">
+            <label class="chip" role="checkbox" aria-checked="false" id="ackRules">I have read and agree to the rules</label>
+          </div>
+          <div class="row" style="margin-top:16px">
+            <button class="btn primary" id="toStep2">Continue</button>
+          </div>
+          <div class="error" id="err1">Please confirm you have read and agree to the rules.</div>
+        </div>
+
+        <!-- STEP 2: Details -->
+        <div data-panel="2" hidden>
+          <h2 style="margin-top:0">Your Details</h2>
+          <form id="detailsForm" novalidate>
+            <div class="field">
+              <label for="mc">Minecraft Username</label>
+              <input class="input" id="mc" required placeholder="Your in-game name">
+            </div>
+            <div class="field">
+              <label for="discord">Discord ID</label>
+              <input class="input" id="discord" required placeholder="e.g., username#1234 or user ID">
+            </div>
+            <div class="field">
+              <label for="fullname">Full Name</label>
+              <input class="input" id="fullname" required placeholder="First Last">
+            </div>
+            <div class="row">
+              <button class="btn" type="button" id="back1">Back</button>
+              <button class="btn primary" type="submit">Continue</button>
+            </div>
+            <div class="error" id="err2">Please complete all fields.</div>
+          </form>
+        </div>
+
+        <!-- STEP 3: Age & Docs -->
+        <div data-panel="3" hidden>
+          <h2 style="margin-top:0">Age & Documents</h2>
+
+          <div class="chips" role="radiogroup" aria-label="Are you over 18?">
+            <label class="chip" role="radio" aria-checked="false" id="ageOver">Over 18</label>
+            <label class="chip" role="radio" aria-checked="false" id="ageUnder">Under 18</label>
+          </div>
+
+          <!-- Over 18 block -->
+          <section id="overBlock" class="card pad" style="margin-top:12px" hidden>
+            <h3 style="margin:0 0 10px">Adult verification</h3>
+            <p class="muted">Download and sign the adult consent form. Then upload the signed form, and provide your CNP and an ID photo.</p>
+            <div class="row" style="margin-top:8px">
+              <a class="btn" href="adult_consent.pdf" download>Download +18 Consent (PDF)</a>
+            </div>
+            <div class="field" style="margin-top:10px">
+              <label for="cnp">CNP (Personal Numeric Code)</label>
+              <input class="input" id="cnp" maxlength="13" placeholder="13 digits">
+              <div class="hint">We validate format and checksum locally to confirm you are 18+.</div>
+              <div class="error" id="cnpErr">Invalid CNP or indicates under 18.</div>
+              <div class="ok" id="cnpOk">CNP looks valid and over 18.</div>
+            </div>
+            <div class="field">
+              <label for="overForm">Upload signed +18 consent (PDF/JPG/PNG)</label>
+              <input class="input" id="overForm" type="file" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+            <div class="field">
+              <label for="idPhoto">Upload ID photo (JPG/PNG)</label>
+              <input class="input" id="idPhoto" type="file" accept=".jpg,.jpeg,.png">
+              <div class="hint">Make sure your CNP is visible on the ID.</div>
+            </div>
+          </section>
+
+          <!-- Under 18 block -->
+          <section id="underBlock" class="card pad" style="margin-top:12px" hidden>
+            <h3 style="margin:0 0 10px">Minor verification</h3>
+            <p class="muted">Download the parental consent form, have it signed by a parent/guardian, then upload the signed file.</p>
+            <div class="row" style="margin-top:8px">
+              <a class="btn" href="minor_consent.pdf" download>Download <18 Consent (PDF)</a>
+            </div>
+            <div class="field" style="margin-top:10px">
+              <label for="underForm">Upload signed minor consent (PDF/JPG/PNG)</label>
+              <input class="input" id="underForm" type="file" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+            <div class="row">
+              <label class="chip" role="checkbox" aria-checked="false" id="parentSigned">I confirm the parent/guardian signature is present</label>
+            </div>
+          </section>
+
+          <div class="row" style="margin-top:14px">
+            <button class="btn" id="back2">Back</button>
+            <button class="btn primary" id="toVerify">Continue</button>
+          </div>
+          <div class="error" id="err3">Please complete the required uploads and checks.</div>
+        </div>
+
+        <!-- STEP 4: Payment -->
+        <div data-panel="4" hidden>
+          <h2 style="margin-top:0">Payment — €4 entrance fee</h2>
+          <p class="muted">Choose a method. This page uses demo buttons — replace with real gateways.</p>
+          <div class="row" style="margin-top:10px;flex-wrap:wrap">
+            <button class="btn primary" id="payPaypal">Pay with PayPal</button>
+            <button class="btn" id="payRevolut">Pay with Revolut</button>
+            <button class="btn" id="payCard">Pay with Mastercard</button>
+          </div>
+          <div class="error" id="err4" style="margin-top:10px">Payment failed. Try again.</div>
+          <div class="ok" id="ok4" style="margin-top:10px">Payment successful!</div>
+          <div class="row" style="margin-top:14px">
+            <button class="btn" id="back3">Back</button>
+          </div>
+        </div>
+
+        <!-- STEP 5: Ticket -->
+        <div data-panel="5" hidden>
+          <h2 style="margin-top:0">Your Ticket</h2>
+          <div class="ticket pad" id="ticket">
+            <div class="head">
+              <div style="display:flex;gap:10px;align-items:center">
+                <span class="logo" aria-hidden="true" style="width:24px;height:24px"></span>
+                <strong>LifeLine</strong>
+              </div>
+              <span class="badge" id="ticketEvent">Event</span>
+            </div>
+            <div class="rows">
+              <div><strong>Name:</strong> <span id="tName"></span></div>
+              <div><strong>Age:</strong> <span id="tAge"></span></div>
+              <div><strong>Purchase Date:</strong> <span id="tDate"></span></div>
+              <div><strong>Minecraft:</strong> <span id="tMC"></span></div>
+            </div>
+          </div>
+          <div class="row" style="margin-top:14px">
+            <button class="btn" id="printBtn">Print / Save PDF</button>
+            <a class="btn primary" href="previusEvents.htm">Go to My previous events</a>
+          </div>
+          <p class="hint" style="margin-top:8px">Ticket saved to your browser (demo). Wire this to your backend later.</p>
+        </div>
+      </section>
+
+      <!-- Right column: event summary & help -->
+      <aside class="card pad">
+        <h3 style="margin-top:0">Event Summary</h3>
+        <div class="muted" id="eventSummary">—</div>
+        <div style="margin-top:12px">
+          <h4 style="margin:10px 0 6px">Need help?</h4>
+          <p class="muted" style="margin:0">Contact staff on Discord or check the FAQ PDF.</p>
+          <div class="row" style="margin-top:8px">
+            <a class="btn" href="FAQFirst.pdf" download>Download FAQ (PDF)</a>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <h4 style="margin:10px 0 6px">Privacy & Security</h4>
+          <ul class="muted" style="padding-left:18px;margin:0">
+            <li>Documents are validated locally here (demo only).</li>
+            <li>For production, process sensitive data on a secure backend.</li>
+            <li>Don’t store CNP or IDs unencrypted.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container copyright">
+      © <span id="year"></span> LifeLine. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    // -------------------------
+    // Utilities & State
+    // -------------------------
+    const qs = (s)=>document.querySelector(s);
+    const qsa = (s)=>Array.from(document.querySelectorAll(s));
+    const params = new URLSearchParams(location.search);
+    const eventKey = params.get('event') || 'unspecified';
+    const eventPretty = ({
+      'snowy-rides':'Snowy Rides — Winter',
+      'dead-in-the-hot':'Dead in the Hot — Summer',
+      'falling-leaves':'Falling Leaves — Autumn'
+    })[eventKey] || eventKey.replaceAll('-', ' ').replace(/\b\w/g, m=>m.toUpperCase());
+
+    const state = {
+      rulesAck:false,
+      mc:'', discord:'', fullname:'',
+      age:'', // 'over'|'under'
+      cnp:'', cnpValid:false, ageComputed:null,
+      files:{ overForm:null, idPhoto:null, underForm:null },
+      parentSigned:false,
+      paid:false
+    };
+
+    // Fill event badges/summaries
+    qs('#eventBadge').textContent = eventPretty || 'Selected event';
+    qs('#ticketEvent').textContent = eventPretty || 'Event';
+    qs('#eventSummary').innerHTML = `
+      <div><strong>Event:</strong> ${eventPretty}</div>
+      <div><strong>Entrance fee:</strong> €4</div>
+      <div class="hint" style="margin-top:6px">You arrived via <code>?event=${eventKey}</code></div>
+    `;
+
+    // Year
+    qs('#year').textContent = new Date().getFullYear();
+
+    // -------------------------
+    // Stepper helpers
+    // -------------------------
+    function goto(step){
+      qsa('[data-panel]').forEach(p => p.hidden = p.getAttribute('data-panel') !== String(step));
+      qsa('.step').forEach(s => {
+        s.classList.toggle('active', s.getAttribute('data-step') === String(step));
+      });
+      window.scrollTo({top: document.querySelector('header.hero').offsetTop + 10, behavior:'smooth'});
+    }
+
+    // -------------------------
+    // STEP 1: Rules
+    // -------------------------
+    const ack = qs('#ackRules');
+    ack.addEventListener('click', ()=>{
+      const now = ack.getAttribute('aria-checked') !== 'true';
+      ack.setAttribute('aria-checked', String(now));
+      state.rulesAck = now;
+    });
+
+    qs('#toStep2').addEventListener('click', ()=>{
+      if(!state.rulesAck){ qs('#err1').style.display='block'; return; }
+      qs('#err1').style.display='none';
+      goto(2);
+    });
+
+    // -------------------------
+    // STEP 2: Details
+    // -------------------------
+    qs('#back1').addEventListener('click', ()=>goto(1));
+    qs('#detailsForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const mc = qs('#mc').value.trim();
+      const dc = qs('#discord').value.trim();
+      const fn = qs('#fullname').value.trim();
+      if(!mc || !dc || !fn){ qs('#err2').style.display='block'; return; }
+      qs('#err2').style.display='none';
+      state.mc=mc; state.discord=dc; state.fullname=fn;
+      goto(3);
+    });
+
+    // -------------------------
+    // STEP 3: Age & Docs
+    // -------------------------
+    const ageOver = qs('#ageOver'), ageUnder = qs('#ageUnder');
+    const overBlock = qs('#overBlock'), underBlock = qs('#underBlock');
+    function selectAge(which){
+      state.age = which;
+      ageOver.setAttribute('aria-checked', String(which==='over'));
+      ageUnder.setAttribute('aria-checked', String(which==='under'));
+      overBlock.hidden = which!=='over';
+      underBlock.hidden = which!=='under';
+    }
+    ageOver.addEventListener('click', ()=>selectAge('over'));
+    ageUnder.addEventListener('click', ()=>selectAge('under'));
+
+    // File inputs
+    qs('#overForm').addEventListener('change', e=>state.files.overForm = e.target.files?.[0]||null);
+    qs('#idPhoto').addEventListener('change', e=>state.files.idPhoto = e.target.files?.[0]||null);
+    qs('#underForm').addEventListener('change', e=>state.files.underForm = e.target.files?.[0]||null);
+
+    // Parent signed checkbox
+    const parentSigned = qs('#parentSigned');
+    parentSigned?.addEventListener('click', ()=>{
+      const now = parentSigned.getAttribute('aria-checked') !== 'true';
+      parentSigned.setAttribute('aria-checked', String(now));
+      state.parentSigned = now;
+    });
+
+    // CNP validation (Romania): 13 digits with checksum + DOB >= 18
+    const cnpInput = qs('#cnp');
+    const cnpErr = qs('#cnpErr'); const cnpOk = qs('#cnpOk');
+    cnpInput.addEventListener('input', ()=>{
+      const cnp = cnpInput.value.replace(/\D/g,'').slice(0,13);
+      cnpInput.value = cnp;
+      const res = validateCNP(cnp);
+      state.cnp = cnp;
+      state.cnpValid = res.valid;
+      state.ageComputed = res.age;
+      cnpErr.style.display = (!res.valid) ? 'block' : 'none';
+      cnpOk.style.display = (res.valid) ? 'block' : 'none';
+    });
+
+    function validateCNP(cnp){
+      if(!/^\d{13}$/.test(cnp)) return {valid:false, age:null};
+      const s=parseInt(cnp[0],10);
+      let year = parseInt(cnp.slice(1,3),10), month = parseInt(cnp.slice(3,5),10), day = parseInt(cnp.slice(5,7),10);
+      let century = (s===1||s===2)?1900:(s===3||s===4)?1800:(s===5||s===6)?2000:(s===7||s===8)?2000:1900;
+      const dob = new Date(century+year, month-1, day);
+      if(isNaN(dob.getTime()) || dob.getMonth()+1!==month || dob.getDate()!==day) return {valid:false, age:null};
+      // checksum
+      const ctrlSeq = '279146358279';
+      let sum=0; for(let i=0;i<12;i++){ sum += parseInt(cnp[i],10)*parseInt(ctrlSeq[i],10); }
+      let cd = sum%11; if(cd===10) cd=1;
+      if(cd !== parseInt(cnp[12],10)) return {valid:false, age:null};
+      // compute age
+      const today = new Date();
+      let age = today.getFullYear()-dob.getFullYear();
+      const m = today.getMonth()-dob.getMonth();
+      if(m<0 || (m===0 && today.getDate()<dob.getDate())) age--;
+      const over18 = age>=18;
+      return {valid:over18, age};
+    }
+
+    qs('#back2').addEventListener('click', ()=>goto(2));
+
+    qs('#toVerify').addEventListener('click', ()=>{
+      let ok = true;
+      qs('#err3').style.display='none';
+
+      if(state.age==='over'){
+        if(!state.cnpValid) ok=false;
+        if(!state.files.overForm) ok=false;
+        if(!state.files.idPhoto) ok=false;
+      } else if(state.age==='under'){
+        if(!state.files.underForm) ok=false;
+        if(!state.parentSigned) ok=false;
+      } else {
+        ok=false;
+      }
+
+      if(!ok){ qs('#err3').style.display='block'; return; }
+
+      // DEMO "AI" checks (client only):
+      // NOTE: Replace with server-side OCR/e-signature validation for production.
+      if(state.age==='under'){
+        // simple heuristic: filename should contain something other than empty
+        // and parentSigned must be true
+        // (Real: detect signature box, required fields)
+      }else{
+        // simple heuristic on +18: we already validated CNP >= 18
+        // (Real: match CNP on ID OCR, verify signature presence)
+      }
+
+      goto(4);
+    });
+
+    // -------------------------
+    // STEP 4: Payment (DEMO)
+    // -------------------------
+    function simulatePayment(success=true){
+      qs('#err4').style.display = success? 'none':'block';
+      qs('#ok4').style.display  = success? 'block':'none';
+      if(success){
+        state.paid = true;
+        // proceed to ticket after a short delay to show success
+        setTimeout(()=>showTicket(), 700);
+      }
+    }
+    qs('#payPaypal').addEventListener('click', ()=>simulatePayment(true));
+    qs('#payRevolut').addEventListener('click', ()=>simulatePayment(true));
+    qs('#payCard').addEventListener('click', ()=>simulatePayment(true));
+    qs('#back3').addEventListener('click', ()=>goto(3));
+
+    function showTicket(){
+      // Fill ticket
+      qs('#tName').textContent = state.fullname;
+      qs('#tAge').textContent  = (state.age==='over' ? (state.ageComputed ?? '18+') : '<18');
+      qs('#tDate').textContent = new Date().toLocaleString();
+      qs('#tMC').textContent   = state.mc;
+      goto(5);
+
+      // Save to "My previous events" (DEMO via localStorage)
+      const rec = {
+        name: state.fullname,
+        age: (state.age==='over' ? (state.ageComputed ?? 18) : 'under'),
+        date: new Date().toISOString(),
+        event: eventKey,
+        mc: state.mc,
+        status: 'valid'
+      };
+      const key = 'lifeline_previous_events';
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      arr.push(rec);
+      localStorage.setItem(key, JSON.stringify(arr));
+    }
+
+    // Print / Save as PDF (user can choose "Save as PDF")
+    qs('#printBtn').addEventListener('click', ()=>{
+      window.print();
+    });
+
+    // -------------------------
+    // Accessibility niceties
+    // -------------------------
+    // Keep focus within current panel when moving steps
+    const observer = new MutationObserver(()=>{
+      const active = qs('[data-panel]:not([hidden])');
+      active?.querySelector('h2, h3, button, input, a')?.focus?.();
+    });
+    observer.observe(qs('#panel'), { attributes:true, subtree:true, attributeFilter:['hidden'] });
+  </script>
+</body>
+</html>
+	

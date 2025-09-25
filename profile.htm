@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title data-i18n="title">Profile — LifeLine</title>
+  <meta name="description" content="Manage your LifeLine profile, language, and account security. View badges earned from your tournament history." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f17; --panel:#101725; --muted:#8aa0b4; --text:#e6eef6;
+      --brand:#5ac8fa; --brand-2:#7df7d1; --line:#1b2f49;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:linear-gradient(180deg,#0b0f17 0%, #0c1322 100%);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    .container{width:min(1100px,90%);margin-inline:auto}
+    .muted{color:var(--muted)}
+    .card{background:linear-gradient(180deg,#0d1524,#0b1321);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+    .pad{padding:18px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;font-weight:700;border:1px solid var(--line);background:#0e1727;cursor:pointer}
+    .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#0b0f17;border:none}
+    .btn.danger{border-color:#7a1f2a;background:#1d0f13;color:#ffb3b3}
+    .btn.small{padding:8px 10px;border-radius:10px;font-weight:600}
+    .input, select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #15243a;background:#0e1727;color:var(--text);outline:none}
+    .input:focus, select:focus{border-color:#24507e;box-shadow:0 0 0 3px rgba(90,200,250,.15)}
+    label{font-weight:600;margin-bottom:6px;display:block}
+    h1{margin:16px 0}
+    h2{margin:0 0 10px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+    /* Nav (like home.htm) */
+    .nav{position:sticky;top:0;z-index:50;background:rgba(11,15,23,.6);backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid var(--line)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:800}
+    .logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-2))}
+    .account{position:relative}
+    .account > button{all:unset;display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:#0e1727;cursor:pointer;font-weight:700}
+    .account .chev{transition:transform .15s ease}
+    .account[aria-expanded="true"] .chev{transform:rotate(180deg)}
+    .menu{position:absolute;right:0;top:calc(100% + 8px);min-width:220px;background:linear-gradient(180deg,#0d1524,#0b1321);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;display:none}
+    .menu a, .menu button{display:flex;gap:8px;align-items:center;width:100%;padding:10px 12px;border-radius:10px;border:0;background:transparent;color:var(--text);text-align:left;cursor:pointer}
+    .menu a:hover, .menu button:hover{background:#0f192b}
+    .menu .sep{height:1px;background:#1b2f49;margin:6px 0}
+
+    /* Badges */
+    .badges{display:flex;gap:10px;flex-wrap:wrap}
+    .badge{display:inline-flex;gap:6px;align-items:center;padding:8px 10px;border-radius:999px;border:1px solid #2a3a56;background:#0e1727;font-weight:700}
+    .badge.og{border-color:#4b5563}
+    .badge.win{border-color:#22c55e}
+    .badge.podium{border-color:#f59e0b}
+
+    /* Modal (delete) */
+    .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);display:none}
+    .modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,90%);display:none}
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="nav" aria-label="Main">
+    <div class="container nav-inner">
+      <a href="home.htm" class="brand" aria-label="Go to Home">
+        <span class="logo" aria-hidden="true"></span>
+        <span>LifeLine</span>
+      </a>
+      <div class="account" id="account" aria-expanded="false">
+        <button id="accountBtn" aria-haspopup="menu" aria-expanded="false">
+          <span data-i18n="myAccount">My Account</span>
+          <svg class="chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+        <div class="menu" id="accountMenu" role="menu" aria-label="Account options">
+          <a role="menuitem" href="previousEvents.htm" data-i18n="prevEvents">My previous events</a>
+          <a role="menuitem" href="profile.htm" aria-current="page" data-i18n="profile">Profile</a>
+          <a role="menuitem" href="settings.htm" data-i18n="settings">Settings</a>
+          <div class="sep" aria-hidden="true"></div>
+          <button role="menuitem" id="logoutBtn" data-i18n="logout">Log out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Title -->
+  <header class="container">
+    <h1 data-i18n="profileTitle">Profile</h1>
+    <p class="muted" data-i18n="profileLead">Update your info, language, and view badges earned from your tournament history.</p>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <!-- LEFT: Profile data -->
+      <section class="card pad">
+        <h2 data-i18n="accountInfo">Account info</h2>
+        <div class="row">
+          <div style="flex:1 1 260px">
+            <label for="username" data-i18n="username">Username</label>
+            <input id="username" class="input" placeholder="Your display name">
+          </div>
+          <div style="flex:1 1 260px">
+            <label for="discord" data-i18n="discordId">Discord ID</label>
+            <input id="discord" class="input" placeholder="username#1234">
+          </div>
+        </div>
+        <div class="row">
+          <div style="flex:1 1 260px">
+            <label for="mc" data-i18n="mcUser">Minecraft username</label>
+            <input id="mc" class="input" placeholder="In-game name">
+          </div>
+          <div style="flex:1 1 260px">
+            <label for="bestPlace" data-i18n="bestPlace">Best leaderboard place (auto)</label>
+            <input id="bestPlace" class="input" disabled>
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary" id="saveBtn" data-i18n="save">Save</button>
+        </div>
+        <p id="saveOk" class="muted" style="display:none" data-i18n="saved">Saved.</p>
+      </section>
+
+      <!-- RIGHT: Language + Badges -->
+      <section class="card pad">
+        <h2 data-i18n="preferences">Preferences</h2>
+        <div class="row">
+          <div style="flex:1 1 260px">
+            <label for="lang" data-i18n="language">Language</label>
+            <select id="lang" class="input">
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="ro">Română</option>
+              <option value="fr">Français</option>
+              <option value="de">Deutsch</option>
+            </select>
+            <p class="muted" style="margin:6px 0 0" data-i18n="langHint">
+              Your choice will apply across the site where translations are added.
+            </p>
+            <div class="row" style="margin-top:10px">
+              <button class="btn" id="applyLang" data-i18n="applyNow">Apply on this page</button>
+            </div>
+          </div>
+        </div>
+
+        <h2 style="margin-top:18px" data-i18n="badges">Badges & awards</h2>
+        <div id="badges" class="badges"></div>
+        <p class="muted" style="margin-top:8px" data-i18n="badgeRules">
+          Badges update automatically from your event history.
+        </p>
+      </section>
+    </div>
+
+    <!-- Danger zone -->
+    <section class="card pad" style="margin-top:16px">
+      <h2 style="color:#ffb3b3" data-i18n="dangerZone">Danger zone</h2>
+      <p class="muted" data-i18n="deleteExplain">
+        Deleting your account removes your profile and history. Gmail verification is required.
+      </p>
+      <div class="row">
+        <button class="btn danger" id="startDelete" data-i18n="deleteAccount">Delete account</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container" style="padding:36px 0 50px;border-top:1px solid var(--line);margin-top:26px">
+    <div class="muted">© <span id="year"></span> LifeLine.</div>
+  </footer>
+
+  <!-- Delete modal -->
+  <div class="scrim" id="scrim"></div>
+  <div class="modal" id="modal">
+    <section class="card pad">
+      <h3 style="margin:0 0 8px" data-i18n="verifyGmail">Verify Gmail to continue</h3>
+      <p class="muted" data-i18n="verifyText">
+        We’ll verify with your Google account before deleting.
+      </p>
+      <div class="row">
+        <button class="btn" id="googleVerify">
+          <img alt="" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:18px;height:18px">
+          <span data-i18n="verifyWithGoogle">Verify with Google</span>
+        </button>
+      </div>
+      <div class="row" style="margin-top:10px;justify-content:space-between">
+        <button class="btn" id="cancelDel" data-i18n="cancel">Cancel</button>
+        <button class="btn danger" id="confirmDel" disabled data-i18n="confirmDelete">Confirm delete</button>
+      </div>
+      <p id="delMsg" class="muted" style="margin-top:8px;display:none"></p>
+    </section>
+  </div>
+
+  <script>
+    // -------------------------------
+    // i18n dictionary (minimal set)
+    // -------------------------------
+    const I18N = {
+      en: {
+        title:"Profile — LifeLine", myAccount:"My Account", prevEvents:"My previous events",
+        profile:"Profile", settings:"Settings", logout:"Log out",
+        profileTitle:"Profile", profileLead:"Update your info, language, and view badges earned from your tournament history.",
+        accountInfo:"Account info", username:"Username", discordId:"Discord ID", mcUser:"Minecraft username",
+        bestPlace:"Best leaderboard place (auto)", save:"Save", saved:"Saved.",
+        preferences:"Preferences", language:"Language",
+        langHint:"Your choice will apply across the site where translations are added.",
+        applyNow:"Apply on this page",
+        badges:"Badges & awards", badgeRules:"Badges update automatically from your event history.",
+        dangerZone:"Danger zone", deleteExplain:"Deleting your account removes your profile and history. Gmail verification is required.",
+        deleteAccount:"Delete account", verifyGmail:"Verify Gmail to continue", verifyText:"We’ll verify with your Google account before deleting.",
+        verifyWithGoogle:"Verify with Google", cancel:"Cancel", confirmDelete:"Confirm delete"
+      },
+      es: {
+        title:"Perfil — LifeLine", myAccount:"Mi cuenta", prevEvents:"Mis eventos previos",
+        profile:"Perfil", settings:"Ajustes", logout:"Cerrar sesión",
+        profileTitle:"Perfil", profileLead:"Actualiza tu información, idioma y ve las insignias ganadas por tu historial.",
+        accountInfo:"Información de la cuenta", username:"Usuario", discordId:"ID de Discord", mcUser:"Usuario de Minecraft",
+        bestPlace:"Mejor puesto (auto)", save:"Guardar", saved:"Guardado.",
+        preferences:"Preferencias", language:"Idioma",
+        langHint:"Tu elección se aplicará donde haya traducciones.",
+        applyNow:"Aplicar en esta página",
+        badges:"Insignias y premios", badgeRules:"Se actualizan automáticamente según tu historial.",
+        dangerZone:"Zona peligrosa", deleteExplain:"Eliminar tu cuenta borra tu perfil e historial. Se requiere verificación de Gmail.",
+        deleteAccount:"Eliminar cuenta", verifyGmail:"Verificar Gmail para continuar", verifyText:"Verificaremos con tu cuenta de Google antes de eliminar.",
+        verifyWithGoogle:"Verificar con Google", cancel:"Cancelar", confirmDelete:"Confirmar eliminación"
+      },
+      ro: {
+        title:"Profil — LifeLine", myAccount:"Contul meu", prevEvents:"Evenimente anterioare",
+        profile:"Profil", settings:"Setări", logout:"Deconectare",
+        profileTitle:"Profil", profileLead:"Actualizează-ți datele, limba și vezi insignele obținute din istoric.",
+        accountInfo:"Informații cont", username:"Utilizator", discordId:"ID Discord", mcUser:"Nume Minecraft",
+        bestPlace:"Cel mai bun loc (auto)", save:"Salvează", saved:"Salvat.",
+        preferences:"Preferințe", language:"Limbă",
+        langHint:"Alegerea se aplică pe site unde există traduceri.",
+        applyNow:"Aplică aici",
+        badges:"Insigne & premii", badgeRules:"Se actualizează automat din istoricul evenimentelor.",
+        dangerZone:"Zonă periculoasă", deleteExplain:"Ștergerea contului îți elimină profilul și istoricul. Este necesară verificare Gmail.",
+        deleteAccount:"Șterge contul", verifyGmail:"Verifică Gmail pentru a continua", verifyText:"Vom verifica cu contul tău Google înainte de ștergere.",
+        verifyWithGoogle:"Verifică cu Google", cancel:"Anulează", confirmDelete:"Confirmă ștergerea"
+      },
+      fr: {
+        title:"Profil — LifeLine", myAccount:"Mon compte", prevEvents:"Mes événements passés",
+        profile:"Profil", settings:"Paramètres", logout:"Se déconnecter",
+        profileTitle:"Profil", profileLead:"Mettez à jour vos infos, la langue et voyez vos badges gagnés.",
+        accountInfo:"Infos du compte", username:"Nom d’utilisateur", discordId:"ID Discord", mcUser:"Pseudo Minecraft",
+        bestPlace:"Meilleur rang (auto)", save:"Enregistrer", saved:"Enregistré.",
+        preferences:"Préférences", language:"Langue",
+        langHint:"Votre choix s’applique là où des traductions existent.",
+        applyNow:"Appliquer ici",
+        badges:"Badges & récompenses", badgeRules:"Mises à jour automatiquement selon l’historique.",
+        dangerZone:"Zone dangereuse", deleteExplain:"La suppression supprime le profil et l’historique. Vérification Gmail requise.",
+        deleteAccount:"Supprimer le compte", verifyGmail:"Vérifiez Gmail pour continuer", verifyText:"Nous vérifierons avec Google avant la suppression.",
+        verifyWithGoogle:"Vérifier avec Google", cancel:"Annuler", confirmDelete:"Confirmer la suppression"
+      },
+      de: {
+        title:"Profil — LifeLine", myAccount:"Mein Konto", prevEvents:"Meine bisherigen Events",
+        profile:"Profil", settings:"Einstellungen", logout:"Abmelden",
+        profileTitle:"Profil", profileLead:"Aktualisiere deine Daten, Sprache und sieh dir deine Abzeichen an.",
+        accountInfo:"Kontoinformationen", username:"Benutzername", discordId:"Discord-ID", mcUser:"Minecraft-Name",
+        bestPlace:"Bester Platz (auto)", save:"Speichern", saved:"Gespeichert.",
+        preferences:"Einstellungen", language:"Sprache",
+        langHint:"Deine Auswahl gilt dort, wo Übersetzungen vorhanden sind.",
+        applyNow:"Hier anwenden",
+        badges:"Abzeichen & Auszeichnungen", badgeRules:"Aktualisiert sich automatisch anhand deiner Historie.",
+        dangerZone:"Gefahrenzone", deleteExplain:"Das Löschen entfernt Profil & Historie. Gmail-Verifizierung erforderlich.",
+        deleteAccount:"Konto löschen", verifyGmail:"Gmail verifizieren", verifyText:"Wir verifizieren mit Google vor dem Löschen.",
+        verifyWithGoogle:"Mit Google verifizieren", cancel:"Abbrechen", confirmDelete:"Löschen bestätigen"
+      }
+    };
+
+    function applyI18n(lang){
+      const dict = I18N[lang] || I18N.en;
+      document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const key = el.getAttribute('data-i18n');
+        if(dict[key]) el.textContent = dict[key];
+      });
+      if(dict.title) document.title = dict.title;
+    }
+
+    // -------------------------------
+    // Nav menu behavior
+    // -------------------------------
+    const acc = document.getElementById('account');
+    const btn = document.getElementById('accountBtn');
+    const menu = document.getElementById('accountMenu');
+    const logoutBtn = document.getElementById('logoutBtn');
+    function openMenu(){ acc.setAttribute('aria-expanded','true'); btn.setAttribute('aria-expanded','true'); menu.style.display='block'; }
+    function closeMenu(){ acc.setAttribute('aria-expanded','false'); btn.setAttribute('aria-expanded','false'); menu.style.display='none'; }
+    btn.addEventListener('click', ()=>{ (acc.getAttribute('aria-expanded')==='true') ? closeMenu() : openMenu(); });
+    document.addEventListener('click', (e)=>{ if(!acc.contains(e.target)) closeMenu(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
+    logoutBtn.addEventListener('click', ()=>{ alert('Logging out (demo). Wire to your auth signOut().'); closeMenu(); });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // -------------------------------
+    // Profile load/save
+    // -------------------------------
+    const PKEY = 'lifeline_profile';
+    const LKEY = 'lifeline_lang';
+    const TKEY = 'lifeline_previous_events';
+
+    const $ = (id)=>document.getElementById(id);
+    const fields = { username:$('username'), discord:$('discord'), mc:$('mc'), bestPlace:$('bestPlace') };
+
+    function loadProfile(){
+      try { return JSON.parse(localStorage.getItem(PKEY) || '{}'); }
+      catch(_){ return {}; }
+    }
+    function saveProfile(data){
+      localStorage.setItem(PKEY, JSON.stringify(data));
+    }
+    function loadTickets(){
+      try { return JSON.parse(localStorage.getItem(TKEY) || '[]'); }
+      catch(_){ return []; }
+    }
+
+    function computeStats(){
+      const tickets = loadTickets();
+      // Best place from INVALID (played) tickets
+      let best = null;
+      let eventsCount = tickets.length;
+      let hasWin = false, hasPodium = false;
+
+      tickets.forEach(t=>{
+        const p = (t.place!=null) ? parseInt(t.place,10) : null;
+        if(p && (!best || p < best)) best = p;
+        if(p === 1) hasWin = true;
+        if(p === 2 || p === 3) hasPodium = true;
+      });
+
+      // Badges:
+      const badges = [];
+      if(eventsCount >= 4) badges.push({key:'OG', cls:'og', label:'OG'});
+      if(hasWin) badges.push({key:'Unbeatable', cls:'win', label:'Unbeatable'});
+      if(hasPodium) badges.push({key:'BetterLuckNextTime', cls:'podium', label:'BetterLuckNextTime'});
+
+      return { bestPlace: best ?? '—', badges };
+    }
+
+    function renderBadges(list){
+      const wrap = document.getElementById('badges');
+      wrap.innerHTML = '';
+      if(!list.length){
+        const p = document.createElement('p');
+        p.className = 'muted';
+        p.textContent = 'No badges yet.';
+        wrap.appendChild(p);
+        return;
+      }
+      list.forEach(b=>{
+        const el = document.createElement('span');
+        el.className = `badge ${b.cls}`;
+        el.textContent = b.label;
+        wrap.appendChild(el);
+      });
+    }
+
+    function populate(){
+      const prof = loadProfile();
+      fields.username.value = prof.username || '';
+      fields.discord.value  = prof.discord  || '';
+      fields.mc.value       = prof.mc       || '';
+
+      const stats = computeStats();
+      fields.bestPlace.value = stats.bestPlace;
+      renderBadges(stats.badges);
+
+      const lang = localStorage.getItem(LKEY) || 'en';
+      $('lang').value = lang;
+      applyI18n(lang);
+    }
+
+    $('saveBtn').addEventListener('click', ()=>{
+      const prof = loadProfile();
+      prof.username = fields.username.value.trim();
+      prof.discord  = fields.discord.value.trim();
+      prof.mc       = fields.mc.value.trim();
+      saveProfile(prof);
+      $('saveOk').style.display = 'block';
+      setTimeout(()=>{$('saveOk').style.display='none';}, 1500);
+    });
+
+    $('applyLang').addEventListener('click', ()=>{
+      const lang = $('lang').value;
+      localStorage.setItem(LKEY, lang);
+      applyI18n(lang);
+    });
+
+    // -------------------------------
+    // Delete account (requires Gmail verification)
+    // -------------------------------
+    const scrim = $('scrim'), modal = $('modal');
+    function openModal(){ scrim.style.display='block'; modal.style.display='block'; }
+    function closeModal(){ scrim.style.display='none'; modal.style.display='none'; $('delMsg').style.display='none'; }
+
+    $('startDelete').addEventListener('click', openModal);
+    $('cancelDel').addEventListener('click', closeModal);
+
+    // DEMO Gmail verification: enable Confirm after "Verify with Google"
+    $('googleVerify').addEventListener('click', async ()=>{
+      // TODO (Firebase):
+      // import { getAuth, reauthenticateWithPopup, GoogleAuthProvider, deleteUser } from 'firebase/auth'
+      // await reauthenticateWithPopup(auth.currentUser, new GoogleAuthProvider())
+      // -> enable confirm button
+      $('delMsg').style.display='block';
+      $('delMsg').textContent = 'Verified with Google (demo). You can now confirm deletion.';
+      $('confirmDel').disabled = false;
+    });
+
+    $('confirmDel').addEventListener('click', async ()=>{
+      // TODO (Firebase): await deleteUser(auth.currentUser)
+      // Clear local data
+      localStorage.removeItem(PKEY);
+      // (Optional) localStorage.removeItem(TKEY); // if account deletion should also remove history
+      $('delMsg').style.display='block';
+      $('delMsg').textContent = 'Account deleted (demo).';
+      setTimeout(()=>{ closeModal(); location.href = 'home.htm'; }, 800);
+    });
+
+    // Init
+    populate();
+  </script>
+</body>
+</html>
