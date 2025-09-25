@@ -2,318 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Circle Showcase — Index</title>
-  <meta name="description" content="Interactive circle animation demo" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LifeLine — Intro</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800;900&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg-overlay: rgba(0,0,0,0.45);
-      --item-bg: rgba(255,255,255,0.06);
-      --item-border: rgba(255,255,255,0.12);
-      --accent: rgba(110,231,183,0.95);
-      --text: #eaf6f1;
-      --muted: #b8c6c0;
-    }
-    html,body{height:100%;}
+    html, body { height:100%; margin:0; }
     body{
-      margin:0; padding:0; font-family:Inter, system-ui, -apple-system, Helvetica, Arial; color:var(--text);
-      background-image: url('523612.jpg');	
-      background-size: cover; background-position: center; background-repeat: no-repeat;
-      min-height:100vh; overflow:hidden;
+      background: url('523612.jpg') center/cover no-repeat fixed #0b0f17;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+      color:#e6eef6;
+      overflow:hidden;
     }
-
-    .overlay{position:fixed; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.55)); z-index:5}
-
-    .nextBtn{
-      position:fixed; top:20px; right:20px; z-index:60;
-      display:flex; align-items:center; justify-content:center;
-      padding:12px 26px; height:44px; min-width:110px; border-radius:999px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-      color:var(--text); border:1px solid var(--item-border); cursor:pointer;
-      box-shadow:0 6px 18px rgba(0,0,0,0.4); font-weight:700; letter-spacing:0.3px;
-    }
-    .nextBtn:disabled{ opacity:0.6; cursor:not-allowed }
-
-    .stage{
-      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
-      width:min(72vmin,760px); height:min(72vmin,760px); max-width:84vh; max-height:84vh; z-index:20; pointer-events:none;
-    }
-    .stage .ring{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:100%; height:100%; border-radius:50%; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.02); }
-
-    .item{
-      position:fixed; display:flex; align-items:center; justify-content:center;
-      min-width:140px; height:62px; padding:8px 18px; box-sizing:border-box;
-      background:var(--item-bg); border-radius:12px; color:var(--text);
-      border:1px solid var(--item-border); font-weight:800; text-align:center;
-      transform:translate(-50%,-50%) scale(1);
-      transition: box-shadow 240ms ease, transform 300ms cubic-bezier(.2,.9,.2,1), opacity 400ms ease;
-      z-index:30; font-size:40px; line-height:1; white-space:nowrap;
-    }
-    .item.active{ transform: translate(-50%,-50%) scale(1.38); box-shadow: 0 18px 36px rgba(0,0,0,0.65); z-index:40; }
-
-    .infoBox{
-      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-      width:56%; max-width:460px; min-width:220px;
-      background: linear-gradient(180deg, rgba(0,0,0,0.48), rgba(255,255,255,0.02));
-      border-radius:12px; padding:18px; box-sizing:border-box; text-align:center;
-      border:1px solid rgba(255,255,255,0.06); color:var(--text);
-      opacity:0; pointer-events:none; transition:opacity 300ms ease, transform 320ms cubic-bezier(.2,.9,.2,1);
-      z-index:35; backdrop-filter: blur(6px);
-    }
-    .infoBox.show{ opacity:1; pointer-events:auto; transform:translate(-50%,-45%); }
-    .infoBox h3{ margin:0 0 8px 0; font-size:20px; }
-    .infoBox p{ margin:0; color:var(--muted); font-size:15px; line-height:1.35; }
-
-    #blockFinal{
-      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%) scale(0.6);
-      width:200px; height:200px; background:url('potzol.png') center/cover no-repeat; border-radius:6px;
-      cursor:pointer; opacity:0; z-index:60; transition: transform 900ms cubic-bezier(.22,.9,.3,1), opacity 600ms ease;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-    }
-    #blockFinal.show{ opacity:1; transform:translate(-50%,-50%) scale(1); }
-
-    @media (max-width:720px){
-      .item{ min-width:110px; height:48px; font-size:32px; }
-      .infoBox{ width:72%; max-width:320px }
-      #blockFinal{ width:140px; height:140px }
-      .nextBtn{ top:12px; right:12px; padding:10px 18px; height:38px }
-    }
+    .lf-root { position:relative; width:100%; height:100%; }
   </style>
+
+  <!-- Inject module CSS (or copy CSS from the JS file into your own stylesheet) -->
+  <script type="module">
+    import { indexAnimationCSS } from './indexAnimation.js';
+    const styleTag = document.createElement('style');
+    styleTag.textContent = indexAnimationCSS;
+    document.head.appendChild(styleTag);
+  </script>
 </head>
 <body>
-  <div class="overlay" aria-hidden="true"></div>
-  <button id="nextBtn" class="nextBtn" aria-label="Next">Next</button>
+  <!-- Mount point for the animation -->
+  <div id="intro" class="lf-root"></div>
 
-  <div id="stage" class="stage" aria-hidden="false">
-    <div class="ring" aria-hidden="true"></div>
-    <div id="infoBox" class="infoBox" role="region" aria-live="polite">
-      <h3 id="infoTitle"></h3>
-      <p id="infoText"></p>
-    </div>
-  </div>
+  <!-- Run the animation -->
+  <script type="module">
+    import { IndexAnimation } from './indexAnimation.js';
 
-  <div id="itemsRoot">
-    <div class="item" data-index="0" style="left:8%; top:8%;">Prizes</div>
-    <div class="item" data-index="1" style="left:29%; top:29%;">Entairtainment</div>
-    <div class="item" data-index="2" style="left:50%; top:50%;">Drama</div>
-    <div class="item" data-index="3" style="left:71%; top:71%;">Competition</div>
-    <div class="item" data-index="4" style="left:92%; top:92%;">Teamwork</div>
-  </div>
-
-  <div id="blockFinal" role="button" aria-label="Go to About"></div>
-
-  <script>
-  (function(){
-    const INITIAL_DELAY = 2000;
-    const DROP_DURATION = 360;
-    const FORMATION_DURATION = 1000;
-    const ROTATION_DURATION = 900;
-    const FINAL_ROTATE_DURATION = 2000;
-
-    const items = Array.from(document.querySelectorAll('.item'));
-    const stage = document.getElementById('stage');
-    const infoBox = document.getElementById('infoBox');
-    const infoTitle = document.getElementById('infoTitle');
-    const infoText = document.getElementById('infoText');
-    const nextBtn = document.getElementById('nextBtn');
-    const blockFinal = document.getElementById('blockFinal');
-
-    const infos = [
-      {title:"Prizes", text:"Rewards and prizes are awarded to winners and outstanding contributors. Trophies, in-game items or other rewards."},
-      {title:"Entairtainment", text:"Live shows, music, mini-games and events to keep participants and viewers engaged."},
-      {title:"Drama", text:"High-stakes moments and memorable plays that make the event exciting to watch."},
-      {title:"Competition", text:"Tournament-style formats, leaderboards and competitive rules that decide winners."},
-      {title:"Teamwork", text:"Cooperation and strategy between team members to accomplish shared goals."}
+    // Words + descriptions (edit copy as you like)
+    const items = [
+      { label: 'Prizes',        desc: 'Rewards and prizes for winners and outstanding contributors.' },
+      { label: 'Entertainment', desc: 'Live shows, music, mini-games and events to keep everyone engaged.' },
+      { label: 'Drama',         desc: 'High-stakes moments and memorable plays that raise the pulse.' },
+      { label: 'Competition',   desc: 'Brackets, leaderboards and fair rules that crown champions.' },
+      { label: 'Teamwork',      desc: 'Strategy and cooperation to reach shared goals.' }
     ];
 
-    let state = 'initial';
-    let currentIndex = 0;
-    let showCount = 0;
-    let baseAngles = [];
-    let formationPositions = [];
-    let stageCenter = {x:0,y:0};
-    let circleRadius = 0;
-    let currentRotation = 0;
-    let animLocked = false;
-
-    function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
-    function easeInOutQuad(t){ return t<0.5 ? 2*t*t : -1 + (4-2*t)*t; }
-
-    function runAnim(duration, onProgress){
-      return new Promise(resolve=>{
-        const start = performance.now();
-        function frame(now){
-          const p = Math.min(1, (now - start) / duration);
-          onProgress(p);
-          if(p < 1) requestAnimationFrame(frame);
-          else resolve();
-        }
-        requestAnimationFrame(frame);
-      });
-    }
-
-    function getRect(el){ return el.getBoundingClientRect(); }
-    function computeCircle(){
-      const rect = stage.getBoundingClientRect();
-      stageCenter = { x: rect.left + rect.width/2, y: rect.top + rect.height/2 };
-      circleRadius = Math.min(rect.width, rect.height) * 0.36;
-      const n = items.length; const step = 360 / n;
-      baseAngles = items.map((_,i)=> i * step);
-      formationPositions = baseAngles.map(a=>{
-        const rad = a * Math.PI/180;
-        return { x: stageCenter.x + circleRadius * Math.cos(rad), y: stageCenter.y + circleRadius * Math.sin(rad) };
-      });
-    }
-
-    function setItemCenter(el, cx, cy){
-      el.style.left = cx + 'px';
-      el.style.top = cy + 'px';
-    }
-
-    function normalizeInitialPositions(){
-      items.forEach(it=>{
-        const r = getRect(it);
-        const cx = r.left + r.width/2;
-        const cy = r.top + r.height/2;
-        setItemCenter(it, cx, cy);
-      });
-    }
-
-    async function formCircleSequence(){
-      animLocked = true; state = 'forming';
-      computeCircle();
-      const starts = items.map(it=>{
-        const r = getRect(it); return {x: r.left + r.width/2, y: r.top + r.height/2};
-      });
-      const drops = starts.map(s=> ({ x: s.x, y: s.y + Math.max(140, window.innerHeight * 0.08) }));
-      await runAnim(DROP_DURATION, p=>{
-        const ease = easeOutCubic(p);
-        items.forEach((it,i)=>{
-          const cx = starts[i].x + (drops[i].x - starts[i].x) * ease;
-          const cy = starts[i].y + (drops[i].y - starts[i].y) * ease;
-          setItemCenter(it, cx, cy);
-        });
-      });
-      await runAnim(FORMATION_DURATION, p=>{
-        const ease = easeOutCubic(p);
-        items.forEach((it,i)=>{
-          const cx = drops[i].x + (formationPositions[i].x - drops[i].x) * ease;
-          const cy = drops[i].y + (formationPositions[i].y - drops[i].y) * ease;
-          setItemCenter(it, cx, cy);
-          it.style.opacity = 1;
-        });
-      });
-      state = 'formed';
-      await rotateToIndex(currentIndex);
-      showInfoFor(currentIndex);
-      animLocked = false;
-    }
-
-    function rotateToIndex(target){
-      return new Promise(resolve=>{
-        computeCircle();
-        const desiredRot = -90 - baseAngles[target];
-        const startRot = currentRotation;
-        const delta = desiredRot - startRot;
-        const startTime = performance.now();
-        function frame(now){
-          const pRaw = Math.min(1, (now - startTime) / ROTATION_DURATION);
-          const p = easeInOutQuad(pRaw);
-          const rot = startRot + delta * p;
-          items.forEach((it,i)=>{
-            const ang = (baseAngles[i] + rot) * Math.PI/180;
-            const cx = stageCenter.x + circleRadius * Math.cos(ang);
-            const cy = stageCenter.y + circleRadius * Math.sin(ang);
-            setItemCenter(it, cx, cy);
-          });
-          if(pRaw < 1) requestAnimationFrame(frame);
-          else { currentRotation = desiredRot; resolve(); }
-        }
-        requestAnimationFrame(frame);
-      });
-    }
-
-    function showInfoFor(idx){
-      items.forEach(it=>it.classList.remove('active'));
-      items[idx].classList.add('active');
-      infoTitle.textContent = infos[idx].title;
-      infoText.textContent = infos[idx].text;
-      infoBox.classList.add('show');
-      state = 'showing';
-      showCount++;
-    }
-
-    function hideInfo(){
-      return new Promise(resolve=>{
-        infoBox.classList.remove('show');
-        items.forEach(it=>it.classList.remove('active'));
-        setTimeout(()=>{ state = 'formed'; resolve(); }, 320);
-      });
-    }
-
-    async function finalAnimation(){
-      animLocked = true; state = 'finalizing';
-      computeCircle();
-      const startRot = currentRotation || 0;
-      const endRot = startRot + 1080;
-      await runAnim(FINAL_ROTATE_DURATION, pRaw=>{
-        const p = easeOutCubic(pRaw);
-        const rot = startRot + (endRot - startRot) * p;
-        items.forEach((it,i)=>{
-          const ang = (baseAngles[i] + rot) * Math.PI/180;
-          const cx = stageCenter.x + circleRadius * Math.cos(ang);
-          const cy = stageCenter.y + circleRadius * Math.sin(ang);
-          setItemCenter(it, cx, cy);
-          it.style.opacity = String(Math.max(0, 1 - p*1.05));
-          it.style.transform = 'translate(-50%,-50%) scale(' + (1 - 0.15 * p) + ')';
-        });
-      });
-      items.forEach(it=>{ it.style.display = 'none'; });
-      blockFinal.classList.add('show');
-      animLocked = false;
-    }
-
-    let firstClicked = false;
-
-    nextBtn.addEventListener('click', async ()=>{
-      if(animLocked) return;
-      if(!firstClicked){
-        firstClicked = true; animLocked = true; nextBtn.disabled = true;
-        setTimeout(async ()=>{ await formCircleSequence(); nextBtn.disabled = false; animLocked=false; }, INITIAL_DELAY);
-        return;
-      }
-      if(state === 'showing'){
-        animLocked=true;
-        await hideInfo();
-        if(showCount >= items.length && currentIndex === items.length - 1){ await finalAnimation(); return; }
-        currentIndex = (currentIndex+1)%items.length;
-        await rotateToIndex(currentIndex);
-        showInfoFor(currentIndex);
-        animLocked=false;
-        return;
-      }
-      if(state === 'formed'){
-        animLocked = true;
-        currentIndex = (currentIndex+1)%items.length;
-        await rotateToIndex(currentIndex);
-        showInfoFor(currentIndex);
-        animLocked=false;
-        return;
+    const anim = new IndexAnimation({
+      mount: document.getElementById('intro'),
+      items,
+      onFinish: () => {
+        // Route after “Start Your Journey”
+        const user =
+          (window.firebaseAuth?.currentUser) ||
+          (window.firebase?.auth && window.firebase.auth().currentUser);
+        window.location.href = user ? 'Home.htm' : 'about.htm';
       }
     });
 
-    blockFinal.addEventListener('click', ()=>{ window.location.href = 'about.htm'; });
-    window.addEventListener('resize', ()=>{
-      if(state==='initial') return; computeCircle();
-      items.forEach((it,i)=>{
-        const ang = (baseAngles[i]+currentRotation)*Math.PI/180;
-        const cx = stageCenter.x + circleRadius*Math.cos(ang);
-        const cy = stageCenter.y + circleRadius*Math.sin(ang);
-        setItemCenter(it, cx, cy);
-      });
-    });
-    window.addEventListener('load', ()=>{ normalizeInitialPositions(); items.forEach(it=>{ it.style.opacity='1'; it.style.display='block'; }); nextBtn.focus(); });
-  })();
+    // Start: words → dots → circle → rotate(2x) → push outward → show message
+    anim.start();
   </script>
 </body>
 </html>
